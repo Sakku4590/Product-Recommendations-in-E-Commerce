@@ -78,6 +78,17 @@ def normalize_description(df):
     except Exception as e:
         print(f"Error during Description normalization: {e}")
         raise
+    
+def preprocess_ecommerce_data(df):
+    """Full preprocessing pipeline for ecommerce dataset."""
+
+    df = remove_invalid_quantity_price(df)
+    df = remove_cancelled_invoices(df)
+    df = remove_missing_customer(df)
+    df = normalize_description(df)
+
+    return df
+
 
 def main():
     try:
@@ -87,7 +98,8 @@ def main():
         logging.info('data loaded properly')
 
         # Transform the data
-        data = normalize_description(df)
+        df = normalize_description(df)
+        data = preprocess_ecommerce_data(df)
         
         # Store the data inside data/processed
         data_path = os.path.join("./data", "interim")
