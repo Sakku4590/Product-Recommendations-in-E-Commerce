@@ -1,0 +1,52 @@
+stages:
+  data_ingestion:
+    cmd: python -m src.data.data_ingestion
+    deps:
+    - src/data/data_ingestion.py
+    outs:
+    - Data/raw
+
+  data_preprocessing:
+    cmd: python -m src.data.data_preprocessing
+    deps:
+    - Data/raw
+    - src/data/data_preprocessing.py
+    outs:
+      - Data/interim:
+          persist: true
+
+  feature_engineering:
+    cmd: python -m src.features.feature_engineering
+    deps:
+    - Data/interim
+    - src/features/feature_engineering.py
+    outs:
+      - Data/processed:
+          persist: true
+
+  model_building:
+    cmd: python -m src.model.model_building
+    deps:
+    - Data/processed
+    - src/model/model_building.py
+    outs:
+    - models/scaler.pkl
+    - models/kmeans_model.pkl
+    - models/product_similarity.pkl
+
+  model_evaluation:
+    cmd: python -m src.model.model_evaluation
+    deps:
+    - models/kmeans_model.pkl
+    - models/product_similarity.pkl
+    - models/scaler.pkl
+    - src/model/model_evaluation.py
+    outs:
+    - reports/experiment_info.json  # Add the model_info.json file as an output
+
+  model_registration:
+    cmd: python -m src.model.model_registry
+    deps:
+    - reports/experiment_info.json
+    - src/model/model_registry.py
+  

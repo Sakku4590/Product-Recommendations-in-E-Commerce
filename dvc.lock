@@ -1,0 +1,111 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python -m src.data.data_ingestion
+    deps:
+    - path: src/data/data_ingestion.py
+      hash: md5
+      md5: 2335dc5b6d7ae640f63c9d875afc494c
+      size: 2436
+    outs:
+    - path: Data/raw
+      hash: md5
+      md5: 436e8723e48033e4074d445b07ddde79.dir
+      size: 48581636
+      nfiles: 1
+  data_preprocessing:
+    cmd: python -m src.data.data_preprocessing
+    deps:
+    - path: Data/raw
+      hash: md5
+      md5: 436e8723e48033e4074d445b07ddde79.dir
+      size: 48581636
+      nfiles: 1
+    - path: src/data/data_preprocessing.py
+      hash: md5
+      md5: 4458ea25d752191ccd4c4bb0ed162a3b
+      size: 3508
+    outs:
+    - path: Data/interim
+      hash: md5
+      md5: a0d0f3ca2ac08f4abdbf39a25672c07d.dir
+      size: 35549045
+      nfiles: 1
+  feature_engineering:
+    cmd: python -m src.features.feature_engineering
+    deps:
+    - path: Data/interim
+      hash: md5
+      md5: a0d0f3ca2ac08f4abdbf39a25672c07d.dir
+      size: 35549045
+      nfiles: 1
+    - path: src/features/feature_engineering.py
+      hash: md5
+      md5: 6af617787f94f163d12f3d476194eb54
+      size: 2519
+    outs:
+    - path: Data/processed
+      hash: md5
+      md5: 8dbb1e4509c0ce358904dd9cc3bc604c.dir
+      size: 64288
+      nfiles: 2
+  model_building:
+    cmd: python -m src.model.model_building
+    deps:
+    - path: Data/processed
+      hash: md5
+      md5: 8dbb1e4509c0ce358904dd9cc3bc604c.dir
+      size: 64288
+      nfiles: 2
+    - path: src/model/model_building.py
+      hash: md5
+      md5: 96954940a5ea4bf41f969a4ca3c3a0ac
+      size: 2431
+    outs:
+    - path: models/kmeans_model.pkl
+      hash: md5
+      md5: 2d57475f63b846a681695cd14db2933f
+      size: 18055
+    - path: models/product_similarity.pkl
+      hash: md5
+      md5: 64b3650ff91f84f258923bebd6a19099
+      size: 121548054
+    - path: models/scaler.pkl
+      hash: md5
+      md5: 4f7605b29450c79b0a73380a77a4227a
+      size: 642
+  model_evaluation:
+    cmd: python -m src.model.model_evaluation
+    deps:
+    - path: models/kmeans_model.pkl
+      hash: md5
+      md5: 2d57475f63b846a681695cd14db2933f
+      size: 18055
+    - path: models/product_similarity.pkl
+      hash: md5
+      md5: 64b3650ff91f84f258923bebd6a19099
+      size: 121548054
+    - path: models/scaler.pkl
+      hash: md5
+      md5: 4f7605b29450c79b0a73380a77a4227a
+      size: 642
+    - path: src/model/model_evaluation.py
+      hash: md5
+      md5: de9d4495e283310279cf39ff8552ac4a
+      size: 1794
+    outs:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: 6f6666343cfff1269a6bb13deb97030a
+      size: 54
+  model_registration:
+    cmd: python -m src.model.model_registry
+    deps:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: 6f6666343cfff1269a6bb13deb97030a
+      size: 54
+    - path: src/model/model_registry.py
+      hash: md5
+      md5: 55db9109aded2379e286bc53a4eaf731
+      size: 3083
